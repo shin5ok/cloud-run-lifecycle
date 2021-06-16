@@ -33,7 +33,7 @@ func init() {
 func main() {
 	g := gin.Default()
 
-	g.GET("/cold", func(c *gin.Context) {
+	g.GET("/coldstart", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": initV})
 	})
 
