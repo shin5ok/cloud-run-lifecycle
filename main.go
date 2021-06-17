@@ -58,6 +58,10 @@ func main() {
 		c.JSON(200, gin.H{"message": initV})
 	})
 
+	g.GET("/envall", func(c *gin.Context) {
+		c.JSON(200, gin.H{"env": os.Environ()})
+	})
+
 	g.Run()
 
 }
