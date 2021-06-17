@@ -12,6 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	uuid "github.com/google/uuid"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,10 +33,15 @@ func postForm(message string) (result []byte, err error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
+func genUUID() (uuidString string) {
+	uuidObj := uuid.New().String()
+	return uuidObj
+}
+
 func init() {
 	if initV == "" {
 		Hostname, _ = os.Hostname()
-		result, _ := postForm("init")
+		result, _ := postForm("init:" + genUUID())
 		var s slackResult
 		log.Printf("result: %v\n", string(result))
 		json.Unmarshal(result, &s)
