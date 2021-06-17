@@ -41,7 +41,7 @@ func genUUID() (uuidString string) {
 
 func init() {
 	if initV == "" {
-		UUID := genUUID()
+		UUID = genUUID()
 		Hostname, _ = os.Hostname()
 		result, _ := postForm("init:" + UUID)
 		var s slackResult
