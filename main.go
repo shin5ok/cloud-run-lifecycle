@@ -19,6 +19,7 @@ import (
 
 var initV string
 var Hostname string
+var UUID string
 
 type slackResult struct {
 	Message string `json:"message"`
@@ -40,8 +41,9 @@ func genUUID() (uuidString string) {
 
 func init() {
 	if initV == "" {
+		UUID := genUUID()
 		Hostname, _ = os.Hostname()
-		result, _ := postForm("init:" + genUUID())
+		result, _ := postForm("init:" + UUID)
 		var s slackResult
 		log.Printf("result: %v\n", string(result))
 		json.Unmarshal(result, &s)
@@ -53,7 +55,7 @@ func init() {
 
 	go func() {
 		sig := <-sigs
-		t := fmt.Sprintf("%s", sig)
+		t := fmt.Sprintf("%s:%s", sig, UUID)
 		postForm("signal:" + t)
 	}()
 }
