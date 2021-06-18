@@ -29,9 +29,8 @@ type slackResult struct {
 
 func postForm(message string) (result []byte, err error) {
 	d := time.Now()
-	newmessage := fmt.Sprintf("%s(%s:%s)", message, Hostname, d.String())
-	resp, _ := http.PostForm(slackAPI, url.Values{"message": {newmessage}})
-	// result, err := ioutil.ReadAll(resp.Body)
+	newMessage := fmt.Sprintf("%s(%s:%s)", message, Hostname, d.String())
+	resp, _ := http.PostForm(slackAPI, url.Values{"message": {newMessage}})
 	return ioutil.ReadAll(resp.Body)
 }
 
