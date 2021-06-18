@@ -21,16 +21,20 @@ var initV string
 var Hostname string
 var UUID string
 var slackAPI = "https://api.uname.link/slack"
+var slackChannel string
 
 type slackResult struct {
 	Message string `json:"message"`
 	Status  string `json:"status"`
 }
 
-func postForm(message string) (result []byte, err error) {
+func postForm(message string, slackChannel string) (result []byte, err error) {
 	d := time.Now()
 	newMessage := fmt.Sprintf("%s(%s:%s)", message, Hostname, d.String())
-	resp, _ := http.PostForm(slackAPI, url.Values{"message": {newMessage}})
+	if slackChannel == "" {
+		slackChannel = "kawano"
+	}
+	resp, _ := http.PostForm(slackAPI, url.Values{"message": {newMessage}, "slack_channel": {slackChannel}})
 	return ioutil.ReadAll(resp.Body)
 }
 
@@ -43,12 +47,15 @@ func init() {
 	if initV == "" {
 		UUID = genUUID()
 		Hostname, _ = os.Hostname()
-		result, _ := postForm("init:" + UUID)
+		slackChannel = os.Getenv("SLACK_CHANNEL")
+
+		result, _ := postForm("init:"+UUID, slackChannel)
 		var s slackResult
 		log.Printf("result: %v\n", string(result))
 		json.Unmarshal(result, &s)
 		initV = s.Message
 		log.Printf("message: %v\n", initV)
+
 	}
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGTERM)
@@ -56,7 +63,7 @@ func init() {
 	go func() {
 		sig := <-sigs
 		t := fmt.Sprintf("%s:%s", sig, UUID)
-		postForm("signal:" + t)
+		postForm("signal:"+t, slackChannel)
 	}()
 }
 
