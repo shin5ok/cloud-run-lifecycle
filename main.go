@@ -20,6 +20,7 @@ import (
 var initV string
 var Hostname string
 var UUID string
+var slackAPI = "https://api.uname.link/slack"
 
 type slackResult struct {
 	Message string `json:"message"`
@@ -29,7 +30,7 @@ type slackResult struct {
 func postForm(message string) (result []byte, err error) {
 	d := time.Now()
 	newmessage := fmt.Sprintf("%s(%s:%s)", message, Hostname, d.String())
-	resp, _ := http.PostForm("https://api.uname.link/slack", url.Values{"message": {newmessage}})
+	resp, _ := http.PostForm(slackAPI, url.Values{"message": {newmessage}})
 	// result, err := ioutil.ReadAll(resp.Body)
 	return ioutil.ReadAll(resp.Body)
 }
