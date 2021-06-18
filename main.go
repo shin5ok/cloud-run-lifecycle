@@ -20,7 +20,8 @@ import (
 var initV string
 var Hostname string
 var UUID string
-var slackAPI = "https://api.uname.link/slack"
+var slackDefaultAPI = "https://api.uname.link/slack"
+var slackAPI string
 var slackChannel string
 
 type slackResult struct {
@@ -44,19 +45,21 @@ func genUUID() (uuidString string) {
 }
 
 func init() {
-	if initV == "" {
-		UUID = genUUID()
-		Hostname, _ = os.Hostname()
-		slackChannel = os.Getenv("SLACK_CHANNEL")
-
-		result, _ := postForm("init:"+UUID, slackChannel)
-		var s slackResult
-		log.Printf("result: %v\n", string(result))
-		json.Unmarshal(result, &s)
-		initV = s.Message
-		log.Printf("message: %v\n", initV)
-
+	UUID = genUUID()
+	slackChannel = os.Getenv("SLACK_CHANNEL")
+	if slackAPI = os.Getenv("SLACK_API"); slackAPI == "" {
+		slackAPI = slackDefaultAPI
 	}
+	Hostname, _ = os.Hostname()
+
+	result, _ := postForm("init:"+UUID, slackChannel)
+	log.Printf("result: %v\n", string(result))
+	var s slackResult
+	json.Unmarshal(result, &s)
+	initV = s.Message
+
+	log.Printf("message: %v\n", initV)
+
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGTERM)
 
