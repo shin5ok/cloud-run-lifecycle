@@ -71,6 +71,22 @@ func main() {
 		c.JSON(200, gin.H{"env": os.Environ()})
 	})
 
+	g.GET("/fuka", fuka)
+
 	g.Run()
 
+}
+
+func fuka(c *gin.Context) {
+	for _, v := range []int{10, 6, 23, 26, 39} {
+		// log.Printf("fuka %d\n", v)
+		slowfibo(v)
+	}
+}
+
+func slowfibo(n int) int {
+	if n < 2 {
+		return n
+	}
+	return slowfibo(n-2) + slowfibo(n-1)
 }
