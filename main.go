@@ -20,17 +20,22 @@ import (
 var initV string
 var Hostname string
 var UUID string
+var slackDefaultAPI = "https://api.uname.link/slack"
+var slackAPI string
+var slackChannel string
 
 type slackResult struct {
 	Message string `json:"message"`
 	Status  string `json:"status"`
 }
 
-func postForm(message string) (result []byte, err error) {
+func postForm(message string, slackChannel string) (result []byte, err error) {
 	d := time.Now()
-	newmessage := fmt.Sprintf("%s(%s:%s)", message, Hostname, d.String())
-	resp, _ := http.PostForm("https://api.uname.link/slack", url.Values{"message": {newmessage}})
-	// result, err := ioutil.ReadAll(resp.Body)
+	newMessage := fmt.Sprintf("%s(%s:%s)", message, Hostname, d.String())
+	if slackChannel == "" {
+		slackChannel = "kawano"
+	}
+	resp, _ := http.PostForm(slackAPI, url.Values{"message": {newMessage}, "slack_channel": {slackChannel}})
 	return ioutil.ReadAll(resp.Body)
 }
 
@@ -40,23 +45,28 @@ func genUUID() (uuidString string) {
 }
 
 func init() {
-	if initV == "" {
-		UUID = genUUID()
-		Hostname, _ = os.Hostname()
-		result, _ := postForm("init:" + UUID)
-		var s slackResult
-		log.Printf("result: %v\n", string(result))
-		json.Unmarshal(result, &s)
-		initV = s.Message
-		log.Printf("message: %v\n", initV)
+	UUID = genUUID()
+	slackChannel = os.Getenv("SLACK_CHANNEL")
+	if slackAPI = os.Getenv("SLACK_API"); slackAPI == "" {
+		slackAPI = slackDefaultAPI
 	}
+	Hostname, _ = os.Hostname()
+
+	result, _ := postForm("init:"+UUID, slackChannel)
+	log.Printf("result: %v\n", string(result))
+	var s slackResult
+	json.Unmarshal(result, &s)
+	initV = s.Message
+
+	log.Printf("message: %v\n", initV)
+
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGTERM)
 
 	go func() {
 		sig := <-sigs
 		t := fmt.Sprintf("%s:%s", sig, UUID)
-		postForm("signal:" + t)
+		postForm("signal:"+t, slackChannel)
 	}()
 }
 
