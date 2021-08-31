@@ -46,6 +46,7 @@ func genUUID() (uuidString string) {
 
 func init() {
 	UUID = genUUID()
+	start := time.Now()
 	slackChannel = os.Getenv("SLACK_CHANNEL")
 	if slackAPI = os.Getenv("SLACK_API"); slackAPI == "" {
 		slackAPI = slackDefaultAPI
@@ -65,7 +66,9 @@ func init() {
 
 	go func() {
 		sig := <-sigs
-		t := fmt.Sprintf("%s:%s", sig, UUID)
+		finish := time.Now()
+		difftime := finish.Sub(start)
+		t := fmt.Sprintf("(%s) %s:%s", difftime, sig, UUID)
 		postForm("signal:"+t, slackChannel)
 	}()
 }
