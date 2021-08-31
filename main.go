@@ -69,7 +69,8 @@ func init() {
 		finish := time.Now()
 		difftime := finish.Sub(start)
 		t := fmt.Sprintf("(%s) %s:%s", difftime, sig, UUID)
-		postForm("signal:"+t, slackChannel)
+		postForm(t, slackChannel)
+		log.Println(t)
 	}()
 }
 
