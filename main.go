@@ -68,7 +68,7 @@ func init() {
 		sig := <-sigs
 		finish := time.Now()
 		difftime := finish.Sub(start)
-		t := fmt.Sprintf("(%s) %s:%s", difftime, sig, UUID)
+		t := fmt.Sprintf("min-instances (%s) %s:%s", difftime, sig, UUID)
 		postForm(t, slackChannel)
 		log.Println(t)
 	}()
