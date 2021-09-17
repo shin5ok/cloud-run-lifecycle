@@ -47,7 +47,7 @@ func genUUID() (uuidString string) {
 func init() {
 	var appName = os.Getenv("NAME")
 	if appName == "" {
-		log.Fatal("'appName' env variable is empty")
+		log.Fatal("'NAME' env variable is empty")
 	}
 
 	UUID = genUUID()
