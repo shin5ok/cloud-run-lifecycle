@@ -45,6 +45,11 @@ func genUUID() (uuidString string) {
 }
 
 func init() {
+	var appName = os.Getenv("NAME")
+	if appName == "" {
+		log.Fatal("'appName' env variable is empty")
+	}
+
 	UUID = genUUID()
 	start := time.Now()
 	slackChannel = os.Getenv("SLACK_CHANNEL")
@@ -53,7 +58,7 @@ func init() {
 	}
 	Hostname, _ = os.Hostname()
 
-	result, _ := postForm("init:"+UUID, slackChannel)
+	result, _ := postForm(fmt.Sprintf("init: %s: %s", appName, UUID), slackChannel)
 	log.Printf("result: %v\n", string(result))
 	var s slackResult
 	json.Unmarshal(result, &s)
@@ -68,7 +73,7 @@ func init() {
 		sig := <-sigs
 		finish := time.Now()
 		difftime := finish.Sub(start)
-		t := fmt.Sprintf("min-instances (%s) %s:%s", difftime, sig, UUID)
+		t := fmt.Sprintf("%s: (%s) %s:%s", appName, difftime, sig, UUID)
 		postForm(t, slackChannel)
 		log.Println(t)
 	}()
