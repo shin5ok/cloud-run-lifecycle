@@ -23,20 +23,21 @@ def _metre(v):
 # @click.option("--date", required=True)
 # @click.option("--debug_print", is_flag=True)
 def rewrite(infile, outfile):
+    results = []
     with open(infile) as f:
         reader = csv.reader(f) 
         with open(outfile, "w", newline="") as w:
             writer = csv.writer(w, delimiter=',')
             for v in reader:
-                print(v[-2:1])
-                writer.writerow(v[-2:1])
-                # location = v[0]
-                # distance = _metre(v[1])
-                # speed = v[2]
-                # newrow = [date,location,distance,speed]
-                # writer.writerow(newrow)
-                # if debug_print:
-                #     print(newrow)
+                try:
+                    item = v[-2:]
+                    # print(item)
+                    m = re.findall(r"new-min-instance:\s\((.+)\)\sterminated:", item[0])
+                    if len(m) == 0:
+                        continue
+                    print(item[1], m[0])
+                except Exception as e:
+                    print(e)
 
 if __name__ == '__main__':
     rewrite()
