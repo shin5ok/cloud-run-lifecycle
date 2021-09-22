@@ -20,8 +20,6 @@ def _metre(v):
 @click.command()
 @click.argument("infile")
 @click.argument("outfile")
-# @click.option("--date", required=True)
-# @click.option("--debug_print", is_flag=True)
 def rewrite(infile, outfile):
     results = []
     with open(infile) as f:
