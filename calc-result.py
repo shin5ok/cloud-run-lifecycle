@@ -4,19 +4,6 @@ import os
 import click
 import re
 
-def _metre(v):
-    k = re.findall(r"(\d*)K",v)
-    m = re.findall(r"([\d\.]+)M",v)
-    totalm = 0.0
-    try:
-        if len(m) > 0:
-            totalm = float(m[0])
-        if len(k) > 0:
-            totalm += float(k[0]) * 1000
-    except Exception as e:
-        print(e)
-    return totalm
-
 @click.command()
 @click.argument("infile")
 @click.argument("outfile")
