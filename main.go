@@ -23,6 +23,7 @@ var UUID string
 var slackDefaultAPI = "https://api.uname.link/slack"
 var slackAPI string
 var slackChannel string
+var slackNotify, _ = os.LookupEnv("SLACK_NOTIFY")
 
 type slackResult struct {
 	Message string `json:"message"`
@@ -74,7 +75,9 @@ func init() {
 		finish := time.Now()
 		difftime := finish.Sub(start)
 		t := fmt.Sprintf("%s: (%s) %s:%s", appName, difftime, sig, UUID)
-		postForm(t, slackChannel)
+		if slackNotify {
+			postForm(t, slackChannel)
+		}
 		log.Println(t)
 	}()
 }
