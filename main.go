@@ -21,9 +21,6 @@ var initV string
 var Hostname string
 var UUID string
 var slackDefaultAPI = "https://api.uname.link/slack"
-var slackAPI string
-var slackChannel string
-var slackNotify, _ = os.LookupEnv("SLACK_NOTIFY")
 
 type slackResult struct {
 	Message string `json:"message"`
@@ -53,8 +50,9 @@ func init() {
 
 	UUID = genUUID()
 	start := time.Now()
-	slackChannel = os.Getenv("SLACK_CHANNEL")
-	if slackAPI = os.Getenv("SLACK_API"); slackAPI == "" {
+	slackChannel := os.Getenv("SLACK_CHANNEL")
+	slackNotify := os.Getenv("SLACK_NOTIFY")
+	if slackAPI := os.Getenv("SLACK_API"); slackAPI == "" {
 		slackAPI = slackDefaultAPI
 	}
 	Hostname, _ = os.Hostname()
