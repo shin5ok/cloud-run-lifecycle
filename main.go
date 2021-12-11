@@ -20,6 +20,7 @@ import (
 var initV string
 var Hostname string
 var UUID string
+var doNotify = os.Getenv("DO_NOTIFY")
 var slackDefaultAPI = "https://api.uname.link/slack"
 var slackChannel = os.Getenv("SLACK_CHANNEL")
 var slackAPI = os.Getenv("SLACK_API")
@@ -73,7 +74,9 @@ func init() {
 		finish := time.Now()
 		difftime := finish.Sub(start)
 		t := fmt.Sprintf("%s: (%s) %s:%s", appName, difftime, sig, UUID)
-		postForm(t, slackChannel)
+		if doNotify != "" {
+			postForm(t, slackChannel)
+		}
 		log.Println(t)
 	}()
 }
