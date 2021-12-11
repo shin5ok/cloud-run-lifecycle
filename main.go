@@ -21,6 +21,9 @@ var initV string
 var Hostname string
 var UUID string
 var slackDefaultAPI = "https://api.uname.link/slack"
+var slackChannel = os.Getenv("SLACK_CHANNEL")
+var slackAPI = os.Getenv("SLACK_API")
+var appName = os.Getenv("NAME")
 
 type slackResult struct {
 	Message string `json:"message"`
@@ -33,6 +36,9 @@ func postForm(message string, slackChannel string) (result []byte, err error) {
 	if slackChannel == "" {
 		slackChannel = "kawano"
 	}
+	if slackAPI == "" {
+		slackAPI = slackDefaultAPI
+	}
 	resp, _ := http.PostForm(slackAPI, url.Values{"message": {newMessage}, "slack_channel": {slackChannel}})
 	return ioutil.ReadAll(resp.Body)
 }
@@ -43,18 +49,12 @@ func genUUID() (uuidString string) {
 }
 
 func init() {
-	var appName = os.Getenv("NAME")
 	if appName == "" {
 		log.Fatal("'NAME' env variable is empty")
 	}
 
 	UUID = genUUID()
 	start := time.Now()
-	slackChannel := os.Getenv("SLACK_CHANNEL")
-	slackNotify := os.Getenv("SLACK_NOTIFY")
-	if slackAPI := os.Getenv("SLACK_API"); slackAPI == "" {
-		slackAPI = slackDefaultAPI
-	}
 	Hostname, _ = os.Hostname()
 
 	result, _ := postForm(fmt.Sprintf("init: %s: %s", appName, UUID), slackChannel)
@@ -73,9 +73,7 @@ func init() {
 		finish := time.Now()
 		difftime := finish.Sub(start)
 		t := fmt.Sprintf("%s: (%s) %s:%s", appName, difftime, sig, UUID)
-		if slackNotify {
-			postForm(t, slackChannel)
-		}
+		postForm(t, slackChannel)
 		log.Println(t)
 	}()
 }
