@@ -13,6 +13,7 @@ import (
 	"time"
 
 	uuid "github.com/google/uuid"
+	"google.golang.org/api/run/v1"
 
 	"github.com/gin-gonic/gin"
 )
@@ -94,12 +95,20 @@ func main() {
 
 	g.GET("/fuka", fuka)
 
-  port:=os.Getenv("PORT")
-  if port == "" {
-    port = "8080"
-  }
-	g.Run(":"+port)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	g.Run(":" + port)
 
+}
+
+func getMeta() map[string]string {
+	r := &run.Service{
+		Metadata: &run.ObjectMeta{},
+	}
+	annotations := r.Metadata.Annotations
+	return annotations
 }
 
 func fuka(c *gin.Context) {
