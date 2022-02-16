@@ -94,7 +94,11 @@ func main() {
 
 	g.GET("/fuka", fuka)
 
-	g.Run()
+  port:=os.Getenv("PORT")
+  if port == "" {
+    port = "8080"
+  }
+	g.Run(":"+port)
 
 }
 
