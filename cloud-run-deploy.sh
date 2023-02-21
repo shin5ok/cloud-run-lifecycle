@@ -2,6 +2,9 @@
 
 DEPLOY=${1:-cloud-run-lifecycle}
 NAME=${2:-cloud-run-lifecycle}
-echo $DEPLOY
-gcloud beta run deploy --source=. --platform=managed --set-env-vars=NAME=$NAME $DEPLOY $@
-# gcloud beta run deploy --source=. --platform=managed --region=us-central1 --allow-unauthenticated $DEPLOY $@
+REGION=${3:-asia-northeast1}
+echo "Deploying $DEPLOY" "..."
+CMD="gcloud run deploy --source=. --region=$REGION --platform=managed --set-env-vars=NAME=$NAME,SLACK_API=$SLACK_API $DEPLOY $@"
+echo $CMD
+
+eval $CMD
