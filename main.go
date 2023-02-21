@@ -1,12 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -22,7 +21,6 @@ var initV string
 var Hostname string
 var UUID string
 var doNotify = os.Getenv("DO_NOTIFY")
-var slackDefaultAPI = "https://api.uname.link/slack"
 var slackChannel = os.Getenv("SLACK_CHANNEL")
 var slackAPI = os.Getenv("SLACK_API")
 var appName = os.Getenv("NAME")
@@ -33,16 +31,27 @@ type slackResult struct {
 }
 
 func postForm(message string, slackChannel string) (result []byte, err error) {
+	if slackAPI == "" {
+		log.Println("slackAPI is empty...That's why nothing to do.")
+		return []byte{}, err
+	}
 	d := time.Now()
 	newMessage := fmt.Sprintf("%s(%s:%s)", message, Hostname, d.String())
 	if slackChannel == "" {
 		slackChannel = "kawano"
 	}
-	if slackAPI == "" {
-		slackAPI = slackDefaultAPI
+	postData := map[string]string{"text": newMessage, "channel": slackChannel}
+	postJsonData, _ := json.Marshal(postData)
+	req, err := http.NewRequest("POST", slackAPI, bytes.NewReader(postJsonData))
+
+	client := &http.Client{}
+	client.Do(req)
+
+	if err != nil {
+		log.Println(err)
+		return []byte{}, err
 	}
-	resp, _ := http.PostForm(slackAPI, url.Values{"message": {newMessage}, "slack_channel": {slackChannel}})
-	return ioutil.ReadAll(resp.Body)
+	return postJsonData, nil
 }
 
 func genUUID() (uuidString string) {
