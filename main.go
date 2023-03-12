@@ -71,7 +71,9 @@ func init() {
 	result, _ := postForm(fmt.Sprintf("init: %s: %s", appName, UUID), slackChannel)
 	log.Printf("result: %v\n", string(result))
 	var s slackResult
-	json.Unmarshal(result, &s)
+	if err := json.NewDecoder(bytes.NewBuffer(result)).Decode(&s); err != nil {
+		log.Println(err.Error())
+	}
 	initV = s.Message
 
 	log.Printf("message: %v\n", initV)
