@@ -106,6 +106,10 @@ func main() {
 
 	g.GET("/fuka", fuka)
 
+	g.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{})
+	})
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
