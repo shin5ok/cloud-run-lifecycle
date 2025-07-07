@@ -96,22 +96,7 @@ func init() {
 }
 
 func main() {
-	g := gin.Default()
-
-	g.GET("/coldstart", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": initV})
-	})
-
-	g.GET("/envall", func(c *gin.Context) {
-		c.JSON(200, gin.H{"env": os.Environ()})
-	})
-
-	g.GET("/fuka", fuka)
-
-	g.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{})
-	})
-
+	g := SetupRouter()
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -133,6 +118,25 @@ func fuka(c *gin.Context) {
 		// log.Printf("fuka %d\n", v)
 		slowfibo(v)
 	}
+}
+
+func SetupRouter() *gin.Engine {
+	g := gin.Default()
+
+	g.GET("/coldstart", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": initV})
+	})
+
+	g.GET("/envall", func(c *gin.Context) {
+		c.JSON(200, gin.H{"env": os.Environ()})
+	})
+
+	g.GET("/fuka", fuka)
+
+	g.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{})
+	})
+	return g
 }
 
 func slowfibo(n int) int {

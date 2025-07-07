@@ -1,4 +1,4 @@
-package main
+package main_test
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gin-gonic/gin"
+	"cloud-run-lifecycle"
 )
 
 // TestMainはこのパッケージの他のテストよりも先に実行されます。
@@ -23,26 +23,8 @@ func TestMain(m *testing.M) {
 	os.Exit(exitCode)
 }
 
-
-// setupRouterはテスト用にルーターをセットアップします。
-// main()にあるものの一部を抜き出したもので、実際のサーバーは起動しません。
-func setupRouter() *gin.Engine {
-	g := gin.Default()
-	g.GET("/coldstart", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": initV})
-	})
-	g.GET("/envall", func(c *gin.Context) {
-		c.JSON(200, gin.H{"env": os.Environ()})
-	})
-	g.GET("/fuka", fuka)
-	g.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{})
-	})
-	return g
-}
-
 func TestPing(t *testing.T) {
-	router := setupRouter()
+	router := main.SetupRouter()
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/ping", nil)
