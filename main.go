@@ -17,13 +17,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var initV string
-var Hostname string
-var UUID string
-var doNotify = os.Getenv("DO_NOTIFY")
-var slackChannel = os.Getenv("SLACK_CHANNEL")
-var slackAPI = os.Getenv("SLACK_API")
-var appName = os.Getenv("NAME")
+var (
+	initV        string
+	Hostname     string
+	UUID         string
+	doNotify     = os.Getenv("DO_NOTIFY")
+	slackChannel = os.Getenv("SLACK_CHANNEL")
+	slackAPI     = os.Getenv("SLACK_API")
+	appName      = os.Getenv("NAME")
+)
 
 type slackResult struct {
 	Message string `json:"message"`
